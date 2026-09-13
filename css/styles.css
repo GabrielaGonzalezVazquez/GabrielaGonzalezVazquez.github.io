@@ -49,6 +49,8 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 body {
@@ -59,6 +61,9 @@ body {
     background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100%;
+    position: relative;
 }
 
 /* ============ TYPOGRAPHY ============ */
@@ -1373,6 +1378,7 @@ section {
 
     .experience-portrait {
         max-width: 260px;
+        animation: none;
     }
 
     .timeline-item {
