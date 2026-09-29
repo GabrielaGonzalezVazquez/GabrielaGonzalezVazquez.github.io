@@ -77,9 +77,10 @@ setInterval(rotarFrase, 2500);
 
 /* ============================================
    TRANSICIÓN DE COLOR DE FONDO
+   (Amarillo cambiado por Charcoal #2B2B2B)
    ============================================ */
 gsap.to('body', {
-    backgroundColor: '#FFC300',
+    backgroundColor: '#2B2B2B',
     scrollTrigger: {
         trigger: '#sobre-mi',
         start: 'top 50%',
@@ -99,7 +100,7 @@ gsap.to('body', {
 });
 
 gsap.to('body', {
-    backgroundColor: '#FFC300',
+    backgroundColor: '#2B2B2B',
     scrollTrigger: {
         trigger: '#servicios',
         start: 'top 50%',
@@ -139,7 +140,7 @@ gsap.to('body', {
 });
 
 gsap.to('body', {
-    backgroundColor: '#FFC300',
+    backgroundColor: '#2B2B2B',
     scrollTrigger: {
         trigger: '#habilidades',
         start: 'top 50%',
@@ -185,7 +186,6 @@ gsap.utils.toArray('.experiencia-img img').forEach(img => {
 
 /* ============================================
    ANIMACIÓN DEL LOGO UNIVERSIDAD PANAMERICANA
-   (Aparece con escala, rotación y rebote elegante)
    ============================================ */
 const logoUP = document.querySelector('.formacion-img-container img');
 
