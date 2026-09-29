@@ -1,7 +1,7 @@
 /* --- VARIABLES --- */
 :root {
     --verde: #B4F5B4;
-    --amarillo: #FFC300;
+    --amarillo: #2B2B2B;    /* ← Charcoal oscuro en lugar de amarillo */
     --durazno: #FAD6C5;
     --naranja: #E65C00;
     --blanco: #FFFFFF;
@@ -23,7 +23,7 @@ body {
     background-color: var(--verde);
     color: var(--texto);
     overflow-x: hidden;
-    transition: background-color 0.8s ease;
+    transition: background-color 1s ease;
 }
 
 /* --- NAVEGACIÓN --- */
@@ -186,7 +186,7 @@ section {
 
 .btn-hero-outline:hover { background-color: var(--texto); color: var(--blanco); transform: translateY(-3px); }
 
-/* --- SOBRE MÍ --- */
+/* --- SOBRE MÍ (Ahora sobre charcoal) --- */
 #sobre-mi {
     background-color: var(--amarillo);
     padding: 0;
@@ -205,9 +205,9 @@ section {
     justify-content: center;
 }
 
-.sobre-content h3 { font-size: 2.5rem; margin-bottom: 10px; }
+.sobre-content h3 { font-size: 2.5rem; margin-bottom: 10px; color: var(--texto); }
 .sobre-content h4 { font-size: 1.1rem; font-weight: 400; margin-bottom: 25px; font-style: italic; color: var(--naranja); }
-.sobre-content p { font-size: 1rem; line-height: 1.8; margin-bottom: 40px; }
+.sobre-content p { font-size: 1rem; line-height: 1.8; margin-bottom: 40px; color: var(--texto); }
 
 .stats-grid {
     display: grid;
@@ -225,9 +225,9 @@ section {
     text-align: center;
 }
 
-#transicion-servicios h2 { font-size: 4rem; font-weight: 700; }
+#transicion-servicios h2 { font-size: 4rem; font-weight: 700; color: var(--texto); }
 
-/* --- SERVICIOS --- */
+/* --- SERVICIOS (Ahora sobre charcoal) --- */
 #servicios {
     background-color: var(--amarillo);
     padding: 0;
@@ -246,7 +246,7 @@ section {
 .servicios-img-container img {
     width: 80%;
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .servicios-content {
@@ -257,7 +257,8 @@ section {
     justify-content: center;
 }
 
-.servicios-content h3 { font-size: 2.5rem; margin-bottom: 40px; }
+.servicios-content h3 { font-size: 2.5rem; margin-bottom: 40px; color: var(--texto); }
+
 .servicios-list { list-style: none; }
 .servicios-list li { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 25px; }
 
@@ -274,7 +275,7 @@ section {
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
-.servicios-list li strong { display: block; font-size: 1rem; margin-bottom: 3px; }
+.servicios-list li strong { display: block; font-size: 1rem; margin-bottom: 3px; color: var(--texto); }
 .servicios-list li span { font-size: 0.85rem; color: var(--gris); line-height: 1.5; }
 
 /* --- EXPERIENCIA --- */
@@ -330,9 +331,9 @@ section {
     margin-bottom: 15px;
 }
 
-.experiencia-texto h4 { font-size: 1.6rem; margin-bottom: 5px; }
+.experiencia-texto h4 { font-size: 1.6rem; margin-bottom: 5px; color: var(--texto); }
 .experiencia-texto h5 { font-size: 1rem; color: var(--naranja); margin-bottom: 20px; font-weight: 500; }
-.experiencia-texto p { font-size: 0.95rem; line-height: 1.7; margin-bottom: 15px; }
+.experiencia-texto p { font-size: 0.95rem; line-height: 1.7; margin-bottom: 15px; color: var(--texto); }
 
 .experiencia-proyecto {
     background-color: rgba(255,255,255,0.6);
@@ -404,7 +405,7 @@ section {
     overflow-y: auto;
 }
 
-.formacion-content h3 { font-size: 2.5rem; margin-bottom: 10px; line-height: 1.2; }
+.formacion-content h3 { font-size: 2.5rem; margin-bottom: 10px; line-height: 1.2; color: var(--texto); }
 .formacion-content h4 { font-size: 1rem; font-weight: 400; color: var(--naranja); margin-bottom: 35px; }
 
 .formacion-list { list-style: none; padding: 0; margin: 0; }
@@ -421,7 +422,7 @@ section {
     margin-bottom: 5px;
 }
 
-.formacion-list li strong { display: block; font-size: 1.05rem; margin-bottom: 3px; line-height: 1.4; }
+.formacion-list li strong { display: block; font-size: 1.05rem; margin-bottom: 3px; line-height: 1.4; color: var(--texto); }
 .formacion-list li > span:last-child { font-size: 0.85rem; color: var(--gris); display: block; line-height: 1.5; }
 
 /* --- CITA --- */
@@ -440,19 +441,22 @@ section {
     justify-content: center;
 }
 
-.cita-content h3 { font-size: 2.5rem; margin-bottom: 25px; }
-.cita-content p { font-size: 1.15rem; line-height: 1.8; font-style: italic; margin-bottom: 30px; }
+.cita-content h3 { font-size: 2.5rem; margin-bottom: 25px; color: var(--texto); }
+.cita-content p { font-size: 1.15rem; line-height: 1.8; font-style: italic; margin-bottom: 30px; color: var(--texto); }
 .cita-content span { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--naranja); font-size: 0.85rem; }
 
 .cita-img-container { height: 100vh; overflow: hidden; }
 .cita-img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- HABILIDADES E IDIOMAS --- */
+/* --- HABILIDADES E IDIOMAS (Ahora sobre charcoal) --- */
 #habilidades {
     background-color: var(--amarillo);
     flex-direction: column;
     padding: 120px 10%;
 }
+
+#habilidades .section-title { color: var(--blanco); }
+#habilidades .section-subtitle { color: #B0B0B0; }
 
 .habilidades-grid {
     display: grid;
@@ -466,7 +470,7 @@ section {
     background-color: var(--blanco);
     padding: 45px;
     border-radius: 25px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
 
 .habilidades-card h4, .idiomas-card h4 {
@@ -475,6 +479,7 @@ section {
     display: flex;
     align-items: center;
     gap: 12px;
+    color: var(--texto);
 }
 
 .habilidades-card h4 i, .idiomas-card h4 i { color: var(--naranja); }
@@ -491,6 +496,7 @@ section {
     font-size: 0.9rem;
     font-weight: 500;
     transition: transform 0.3s;
+    color: var(--texto);
 }
 
 .skill-item:hover { transform: translateX(5px); }
@@ -500,14 +506,14 @@ section {
 .idioma-item:last-child { margin-bottom: 0; }
 
 .idioma-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-.idioma-info span:first-child { font-weight: 600; }
+.idioma-info span:first-child { font-weight: 600; color: var(--texto); }
 .idioma-info span:last-child { font-size: 0.75rem; color: var(--gris); }
 
 .idioma-barra { background-color: rgba(0,0,0,0.08); height: 12px; border-radius: 10px; overflow: hidden; }
 .idioma-progreso { height: 100%; background: linear-gradient(90deg, var(--naranja), #ff8c42); border-radius: 10px; transition: width 1.5s ease; }
 
 /* ============================================
-   PERSPECTIVAS / BLOG (Sección del index)
+   PERSPECTIVAS / BLOG
    ============================================ */
 #perspectivas {
     background-color: var(--durazno) !important;
@@ -787,7 +793,7 @@ section {
 }
 
 .testimonio-card > i { font-size: 2rem; color: var(--naranja); opacity: 0.3; margin-bottom: 15px; }
-.testimonio-card p { font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; font-style: italic; }
+.testimonio-card p { font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; font-style: italic; color: var(--texto); }
 
 .testimonio-autor { display: flex; align-items: center; gap: 15px; }
 
@@ -802,7 +808,7 @@ section {
     font-weight: 700;
 }
 
-.testimonio-autor div strong { display: block; font-size: 0.95rem; }
+.testimonio-autor div strong { display: block; font-size: 0.95rem; color: var(--texto); }
 .testimonio-autor div span { font-size: 0.8rem; color: var(--gris); }
 
 /* --- CONTACTO --- */
@@ -813,12 +819,12 @@ section {
     padding: 120px 10%;
 }
 
-#contacto h3 { font-size: 3rem; margin-bottom: 10px; }
-#contacto h4 { font-size: 1.5rem; font-weight: 400; margin-bottom: 30px; }
-#contacto > p { font-size: 1.05rem; max-width: 600px; margin-bottom: 40px; line-height: 1.8; }
+#contacto h3 { font-size: 3rem; margin-bottom: 10px; color: var(--texto); }
+#contacto h4 { font-size: 1.5rem; font-weight: 400; margin-bottom: 30px; color: var(--texto); }
+#contacto > p { font-size: 1.05rem; max-width: 600px; margin-bottom: 40px; line-height: 1.8; color: var(--texto); }
 
 .contacto-emails { margin-bottom: 40px; font-size: 1rem; }
-.contacto-emails p { margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.contacto-emails p { margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--texto); }
 .contacto-emails i { color: var(--naranja); }
 .contacto-emails a { color: var(--naranja); text-decoration: none; font-weight: 600; }
 
