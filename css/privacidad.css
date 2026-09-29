@@ -1,0 +1,149 @@
+/* ============================================
+   ESTILOS DE LA PÁGINA DE AVISO DE PRIVACIDAD
+   (Override de estilos globales)
+   ============================================ */
+
+/* Reset de la etiqueta main para que no herede nada raro */
+.privacidad-main {
+    display: block !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    width: 100%;
+    background-color: var(--verde);
+}
+
+/* Contenedor principal del aviso */
+.privacidad-container {
+    max-width: 900px;
+    margin: 120px auto 80px;
+    padding: 50px 60px;
+    background-color: var(--blanco);
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    line-height: 1.8;
+    display: block !important;
+    min-height: auto !important;
+}
+
+/* Título principal */
+.privacidad-container h1 {
+    font-size: 2.5rem;
+    color: var(--texto);
+    margin-bottom: 10px;
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+/* Cada sección del aviso - SIN flex, SIN 100vh */
+.privacidad-section {
+    display: block !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: static !important;
+    width: 100%;
+}
+
+/* Subtítulos */
+.privacidad-container h2 {
+    font-size: 1.5rem;
+    color: var(--naranja);
+    margin-top: 40px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--verde);
+    display: block;
+    width: 100%;
+}
+
+.privacidad-container h3 {
+    font-size: 1.15rem;
+    color: var(--texto);
+    margin-top: 25px;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+}
+
+/* Párrafos y listas */
+.privacidad-container p,
+.privacidad-container li {
+    font-size: 1rem;
+    color: var(--gris);
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+}
+
+.privacidad-container ul {
+    list-style-type: disc;
+    padding-left: 25px;
+    margin-bottom: 20px;
+    display: block;
+    width: 100%;
+}
+
+.privacidad-container li {
+    display: list-item;
+}
+
+/* Enlaces */
+.privacidad-container a {
+    color: var(--naranja);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.privacidad-container a:hover {
+    text-decoration: underline;
+}
+
+/* Fecha */
+.fecha-actualizacion {
+    text-align: center;
+    font-style: italic;
+    color: var(--gris);
+    margin-bottom: 40px;
+    display: block;
+    width: 100%;
+}
+
+/* Botón de volver */
+.btn-volver {
+    display: inline-block !important;
+    margin-top: 40px;
+    background-color: var(--naranja);
+    color: var(--blanco) !important;
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-volver:hover {
+    background-color: #c94e00;
+    text-decoration: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .privacidad-container {
+        margin: 100px 15px 60px;
+        padding: 30px 25px;
+    }
+    .privacidad-container h1 {
+        font-size: 1.8rem;
+    }
+    .privacidad-container h2 {
+        font-size: 1.3rem;
+    }
+    .privacidad-container h3 {
+        font-size: 1.05rem;
+    }
+    .privacidad-container p,
+    .privacidad-container li {
+        font-size: 0.9rem;
+    }
+}
