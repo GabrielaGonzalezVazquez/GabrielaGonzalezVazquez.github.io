@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-BORRADORES DE ARTÍCULOS — Perspectivas
+CONTENIDO DE LOS ARTÍCULOS — Perspectivas
 Cada artículo tiene versión ES y EN con la MISMA estructura de bloques.
 Tipos de bloque: ('h2', texto) · ('p', html) · ('ul', [html, ...]) · ('quote', texto) · ('media', 'video'|'infografia'|'galeria')
-IMPORTANTE: son borradores. Revisar cada dato legal antes de publicar.
+Tras editar este archivo, ejecutar: python3 tools/generar_articulos.py
 """
 
 MESES_ES = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]

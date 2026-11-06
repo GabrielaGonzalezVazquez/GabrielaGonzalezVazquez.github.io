@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Genera: articulo-<slug>.html (x6) y blog.html a partir de tools/articulos_data.py
-Uso (desde la raíz del sitio):   python tools/generar_articulos.py
+Genera: articulo-<slug>.html (x6), blog.html y articulo.html (redirección)
+a partir de tools/articulos_data.py.
+
+Uso (desde la raíz del sitio):   python3 tools/generar_articulos.py
+
 Cada texto lleva data-en="..." con su traducción; js/sitio.js hace el cambio ES/EN.
+Estilos: css/site.css (el mismo sistema de diseño que index.html).
+
+Multimedia:
+  · Video de YouTube: se define en VIDEOS (slug → id y pie de foto).
+  · Audio: si existe assets/articulos/<slug>.mp3, se muestra un reproductor; si no, no aparece nada.
+  · Los bloques ('media', 'infografia'|'galeria') no se publican.
 """
 import os, sys, html as H
+from urllib.parse import quote
 sys.path.insert(0, os.path.dirname(__file__))
 from articulos_data import ARTICULOS, AUTORA, MESES_ES, MESES_EN
 
@@ -13,335 +23,290 @@ DOMINIO = "https://gabrielagonzalezvazquez.github.io"
 WA = "https://wa.me/525537179626?text="
 esc = lambda s: H.escape(s, quote=True)
 
-# ------------------------------------------------------------------ MULTIMEDIA DE INTERNET
-PX = "https://cdn.pixabay.com/photo/"
-PE = "https://images.pexels.com/photos/"
-MEDIA = {
- "ai-governance-mexico": dict(
-    thumb=PX+"2020/11/20/05/45/artificial-intelligence-5760547_1280.jpg",
-    hero=PX+"2020/11/20/05/45/artificial-intelligence-5760547_1280.jpg",
-    youtube="OaND_omLEng",
-    hero_cap=("Inteligencia Artificial y regulación: el reto de gobernar los sistemas que ya operan en la empresa.",
-              "Artificial Intelligence and regulation: the challenge of governing the systems already running inside the company."),
-    cap=("Video: guía del AI Act de la Unión Europea y su enfoque basado en riesgo.",
-         "Video: guide to the EU AI Act and its risk-based approach.")),
- "lfpdppp-vs-gdpr": dict(
-    thumb=PX+"2024/12/22/07/35/data-protection-9283905_1280.png",
-    hero=PX+"2024/12/22/07/35/data-protection-9283905_1280.png", contain=True,
-    imgs=[PX+"2014/04/03/00/32/padlock-308589_1280.png"],
-    hero_cap=("Protección de datos personales: un mismo principio, dos marcos jurídicos.",
-              "Personal data protection: one principle, two legal frameworks."),
-    cap=("La seguridad y la privacidad se diseñan desde el producto.",
-         "Security and privacy are designed into the product.")),
- "gobernanza-startups": dict(
-    thumb=PE+"933964/pexels-photo-933964.jpeg?auto=compress&cs=tinysrgb&w=1280",
-    hero=PE+"933964/pexels-photo-933964.jpeg?auto=compress&cs=tinysrgb&w=1600",
-    imgs=[PE+"7097/people-coffee-tea-meeting.jpg?auto=compress&w=1000",
-          PE+"7096/people-woman-coffee-meeting.jpg?auto=compress&w=1000",
-          PE+"7093/coffee-desk-notes-workspace.jpg?auto=compress&w=1000"],
-    hero_cap=("Equipos fundadores: gobernar con reglas claras desde las primeras decisiones.",
-              "Founding teams: governing with clear rules from the very first decisions."),
-    cap=("Reuniones de socios, actas y acuerdos claros: la base de una startup lista para invertir.",
-         "Partner meetings, minutes and clear agreements: the foundation of an investment-ready startup.")),
- "propiedad-intelectual-digital": dict(
-    thumb=PX+"2017/04/10/07/57/processor-2217771_1280.jpg",
-    hero=PX+"2017/04/10/07/57/processor-2217771_1280.jpg",
-    imgs=[PX+"2016/09/09/20/44/robot-1658023_1280.jpg"],
-    hero_cap=("Software, algoritmos y modelos de IA: activos intangibles que conviene proteger.",
-              "Software, algorithms and AI models: intangible assets worth protecting."),
-    cap=("Los modelos de IA y el código también son propiedad intelectual.",
-         "AI models and code are also intellectual property.")),
- "compliance-ventaja-competitiva": dict(
-    thumb=PX+"2017/09/05/12/20/business-2717427_1280.jpg",
-    hero=PX+"2017/09/05/12/20/business-2717427_1280.jpg",
-    imgs=[PX+"2014/08/02/11/21/contract-408216_1280.jpg"],
-    hero_cap=("Compliance: cumplir bien también abre puertas comerciales.",
-              "Compliance: doing it right also opens commercial doors."),
-    cap=("Un programa de cumplimiento sólido genera confianza ante clientes, aliados e inversionistas.",
-         "A solid compliance program builds trust with clients, partners and investors.")),
- "contratos-internacionales": dict(
-    thumb=PX+"2018/01/23/03/48/conclusion-of-the-contract-3100579_1280.jpg",
-    hero=PX+"2018/01/23/03/48/conclusion-of-the-contract-3100579_1280.jpg",
-    imgs=[PX+"2018/01/19/07/58/shaking-hands-3091908_1280.jpg",
-          PX+"2019/02/21/14/09/handshake-4011419_1280.jpg",
-          PX+"2018/08/30/08/56/shaking-hands-3641642_1280.jpg"],
-    hero_cap=("Contratos internacionales: claridad en jurisdicción, idioma y ley aplicable.",
-              "International contracts: clarity on jurisdiction, language and governing law."),
-    cap=("Negociar con claridad evita disputas entre sistemas jurídicos distintos.",
-         "Negotiating clearly prevents disputes between different legal systems.")),
+VIDEOS = {
+    "ai-governance-mexico": dict(
+        youtube="OaND_omLEng",
+        cap=("Video: guía del AI Act de la Unión Europea y su enfoque basado en riesgo.",
+             "Video: guide to the EU AI Act and its risk-based approach.")),
 }
+
+SVG_WA = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>')
+SVG_LI = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>')
+SVG_LINK = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="fill:none">'
+            '<path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1"/></svg>')
+
 
 def T(es, en, tag="span", cls="", extra=""):
     c = f' class="{cls}"' if cls else ""
-    return f'<{tag}{c} {extra} data-en="{esc(en)}">{es}</{tag}>'.replace("  ", " ")
+    x = f" {extra}" if extra else ""
+    return f'<{tag}{c}{x} data-en="{esc(en)}">{es}</{tag}>'
 
-def fecha_corta(f):  # 13 Ene 2026
+def fecha_corta(f):  # 13 ene 2026
     y, m, d = f
-    return (f"{d:02d} {MESES_ES[m][:3].capitalize()} {y}", f"{MESES_EN[m][:3]} {d}, {y}")
+    return (f"{d} {MESES_ES[m][:3]} {y}", f"{MESES_EN[m][:3]} {d}, {y}")
 def fecha_larga(f):
     y, m, d = f
     return (f"{d} de {MESES_ES[m]} de {y}", f"{MESES_EN[m]} {d}, {y}")
-def mins(a): return (f"{a['mins']} min de lectura", f"{a['mins']} min read")
+def iso(f): return f"{f[0]}-{f[1]:02d}-{f[2]:02d}"
 
-def autor_img(cls="", alt=True):
-    return (f'<img {("class="+chr(34)+cls+chr(34)) if cls else ""} src="{AUTORA["foto"]}" alt="{AUTORA["nombre"]}" '
-            f'onerror="this.onerror=null;this.src=\'{AUTORA["foto_respaldo"]}\'">')
+def autor_img(size=40):
+    return f'<img src="{AUTORA["foto"]}" width="{size}" height="{size}" alt="" loading="lazy">'
 
-def media_tag(kind, src):
-    if kind == "img":   return f'<img class="ph-media" src="{src}" alt="" loading="lazy" referrerpolicy="no-referrer">'
-    if kind == "video": return f'<video class="ph-media" src="{src}" controls preload="metadata" playsinline></video>'
-    if kind == "audio": return f'<audio class="ph-media" src="{src}" controls preload="none"></audio>'
-
-def ph(kind, label, hint, src, css="ph-16x9", icon="fa-regular fa-image", mkind="img"):
-    """Placeholder multimedia. Si existe el archivo `src`, se muestra solo. Si no, se ve el placeholder."""
-    return (f'<div class="ph {css}">{media_tag(mkind, src)}'
-            f'<span class="ph-ico"><i class="{icon}"></i></span>'
-            f'<span class="ph-label" data-en="{esc(label[1])}">{label[0]}</span>'
-            f'<span class="ph-hint" data-en="{esc(hint[1])}">{hint[0]}</span></div>')
-
-def thumb(a):
-    return (f'<a class="ph ph-thumb" href="articulo-{a["slug"]}.html" aria-label="{esc(a["titulo"][0])}" data-en-aria-label="{esc(a["titulo"][1])}">'
-            f'{media_tag("img", MEDIA[a["slug"]]["thumb"])}'
-            f'<span class="ph-ico"><i class="fa-regular fa-image"></i></span>'
-            f'<span class="ph-label" data-en="Cover image">Imagen de portada</span></a>')
-
-def cat_html(a):
-    return f'<div class="blog-categoria"><i class="fa-solid {a["icon"]}"></i> {T(a["cat"][0], a["cat"][1])}</div>'
-
-def card(a, fade=False):
-    f = fecha_corta(a["fecha"]); m = (f'{a["mins"]} min lectura', f'{a["mins"]} min read')
-    return f'''<article class="blog-card{' fade-in' if fade else ''}" data-cat="{a["slug"]}" data-catname="{esc(a["cat"][0])}">
-                {thumb(a)}
-                <div class="blog-body">
-                    {cat_html(a)}
-                    <h4>{T(a["titulo"][0], a["titulo"][1], "span")}</h4>
-                    <p>{T(a["deck"][0], a["deck"][1], "span")}</p>
-                    <div class="blog-by">{autor_img()} <span>{AUTORA["nombre"]}</span></div>
-                    <div class="blog-meta">
-                        <span><i class="fa-regular fa-calendar"></i> {T(f[0], f[1])}</span>
-                        <span><i class="fa-regular fa-clock"></i> {T(m[0], m[1])}</span>
-                    </div>
-                    <a href="articulo-{a["slug"]}.html" class="blog-link">{T("Leer artículo", "Read article")} <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            </article>'''
-
-NAV_LANG = '<button class="lang-btn" id="lang-toggle" type="button" aria-label="Cambiar idioma / Change language"><i class="fa-solid fa-globe"></i><span>EN</span></button>'
-
-def head(titulo, desc, path, extra=""):
+# ------------------------------------------------------------------ PIEZAS COMUNES
+def head(titulo, desc, path, og_type="article", extra=""):
     t_es, t_en = titulo; d_es, d_en = desc
     return f'''<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-en="{esc(t_en)}">{t_es}</title>
-    <meta name="description" content="{esc(d_es)}" data-en-content="{esc(d_en)}">
-    <meta name="author" content="{AUTORA["nombre"]}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="{DOMINIO}/{path}">
-    <meta property="og:title" content="{esc(t_es)}">
-    <meta property="og:description" content="{esc(d_es)}">
-    <meta property="og:image" content="{DOMINIO}/assets/foto-sobre-mi.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="{DOMINIO}/{path}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/negocios.css">{extra}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="{esc(t_en)}">{t_es}</title>
+<meta name="description" content="{esc(d_es)}" data-en-content="{esc(d_en)}">
+<meta name="author" content="{AUTORA["nombre"]}">
+<meta name="theme-color" content="#F5F2EC">
+<link rel="canonical" href="{DOMINIO}/{path}">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="{og_type}">
+<meta property="og:url" content="{DOMINIO}/{path}">
+<meta property="og:title" content="{esc(t_es)}">
+<meta property="og:description" content="{esc(d_es)}">
+<meta property="og:image" content="{DOMINIO}/assets/foto-sobre-mi.jpg">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/newsreader-normal-latin-9.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/ibm-plex-sans-normal-latin-5.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/site.css">{extra}
 </head>
 <body>
+<a class="skip" href="#main" data-en="Skip to content">Saltar al contenido</a>
 '''
 
-def footer(links):
+def header(actual=""):
+    links = [("index.html#sobre-mi", "Perfil", "About"), ("index.html#servicios", "Áreas", "Practice"),
+             ("index.html#experiencia", "Experiencia", "Experience"), ("blog.html", "Perspectivas", "Insights"),
+             ("index.html#contacto", "Contacto", "Contact")]
+    nav = "\n      ".join(
+        f'<a href="{h}"{" aria-current=" + chr(34) + "page" + chr(34) if h == actual else ""} data-en="{esc(en)}">{es}</a>'
+        for h, es, en in links)
+    lang = '<button class="lang-btn" type="button" aria-label="Switch to English" lang="en">EN</button>'
     return f'''
-    <footer>
-        <p>{T("© 2026 Gabriela L. González Vázquez. Todos los derechos reservados.", "© 2026 Gabriela L. González Vázquez. All rights reserved.")}</p>
-        <p>{links}</p>
-    </footer>
-    <script src="js/sitio.js"></script>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Gabriela L. González Vázquez — inicio" data-en-aria-label="Gabriela L. González Vázquez — home">
+      <b>G. González Vázquez</b><span data-en="Attorney">Abogada</span>
+    </a>
+    <div class="top-actions">
+      {lang}
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menú" data-en-aria-label="Menu"><span></span></button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Principal" data-en-aria-label="Main">
+      {nav}
+      {lang}
+    </nav>
+  </div>
+</header>
+'''
+
+def footer():
+    return f'''
+<footer class="foot">
+  <div class="wrap">
+    <p data-en="© 2026 Gabriela L. González Vázquez">© 2026 Gabriela L. González Vázquez</p>
+    <nav aria-label="Pie de página" data-en-aria-label="Footer">
+      <a href="index.html" data-en="Home">Inicio</a>
+      <a href="blog.html" data-en="Insights">Perspectivas</a>
+      <a href="privacidad.html" data-en="Privacy notice">Aviso de privacidad</a>
+      <a href="aviso-legal.html" data-en="Legal notice">Aviso legal</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="js/sitio.js"></script>
 </body>
 </html>
 '''
-FOOT_LINKS = (f'<a href="privacidad.html">{T("Aviso de Privacidad", "Privacy Notice")}</a> | '
-              f'<a href="index.html">{T("Inicio", "Home")}</a> | <a href="blog.html">{T("Perspectivas", "Insights")}</a>')
+
+def post_row(a, reveal=True):
+    f = fecha_corta(a["fecha"])
+    meta = (f'{f[0]} · {a["mins"]} min', f'{f[1]} · {a["mins"]} min')
+    return f'''
+      <article class="post{" reveal" if reveal else ""}" data-catname="{esc(a["cat"][0])}">
+        <p class="eyebrow">{T(a["cat"][0], a["cat"][1], "b")}{T(meta[0], meta[1])}</p>
+        <div>
+          <h3><a href="articulo-{a["slug"]}.html" data-en="{esc(a["titulo"][1])}">{a["titulo"][0]}</a></h3>
+          <p data-en="{esc(a["deck"][1])}">{a["deck"][0]}</p>
+        </div>
+        <span class="go" aria-hidden="true" data-en="Read →">Leer →</span>
+      </article>'''
 
 # ------------------------------------------------------------------ ARTÍCULO
-def render_blocks(a, lang_i):
+def media_block(a):
+    """Video de YouTube con fachada: no se conecta a YouTube hasta que la persona hace clic."""
+    v = VIDEOS.get(a["slug"])
+    if not v:
+        return ""
+    cap = v["cap"]
+    aviso = ("Al reproducir, el video se carga desde YouTube (Google), que puede guardar cookies. "
+             "Consulte el <a href=\"privacidad.html#cookies\">Aviso de Privacidad</a>.",
+             "Playing loads the video from YouTube (Google), which may set cookies. "
+             "See the <a href=\"privacidad.html#cookies\">Privacy Notice</a>.")
+    return (f'<figure><div class="video-embed yt" data-yt="{v["youtube"]}" data-title="{esc(cap[0])}">'
+            f'<button type="button" class="yt-play" data-en="&lt;span&gt;Play video&lt;/span&gt;"><span>Reproducir video</span></button>'
+            f'<p class="yt-note" data-en="{esc(aviso[1])}">{aviso[0]}</p></div>'
+            f'<figcaption data-en="{esc(cap[1])}">{cap[0]}</figcaption></figure>')
+
+def render_blocks(a):
     es, en = a["es"], a["en"]
     assert [b[0] for b in es] == [b[0] for b in en], a["slug"]
     out = []
     for (t, ves), (_, ven) in zip(es, en):
-        if t == "h2":    out.append(f'<h2 {"data-en=" + chr(34) + esc(ven) + chr(34)}>{ves}</h2>')
-        elif t == "p":   out.append(f'<p data-en="{esc(ven)}">{ves}</p>')
-        elif t == "ul":  out.append("<ul>" + "".join(f'<li data-en="{esc(y)}">{x}</li>' for x, y in zip(ves, ven)) + "</ul>")
-        elif t == "quote": out.append(f'<blockquote class="pull" data-en="{esc(ven)}">{ves}</blockquote>')
-        elif t == "media": out.append(media_block(a, ves))
-    return "\n            ".join(out)
+        if t == "h2":      out.append(f'<h2 data-en="{esc(ven)}">{ves}</h2>')
+        elif t == "p":     out.append(f'<p data-en="{esc(ven)}">{ves}</p>')
+        elif t == "ul":    out.append("<ul>" + "".join(f'<li data-en="{esc(y)}">{x}</li>' for x, y in zip(ves, ven)) + "</ul>")
+        elif t == "quote": out.append(f'<blockquote><p data-en="{esc(ven)}">{ves}</p></blockquote>')
+        elif t == "media" and ves == "video":
+            m = media_block(a)
+            if m: out.append(m)
+    return "\n        ".join(out)
 
-def media_block(a, kind):
-    m = MEDIA[a["slug"]]; cap = m["cap"]; imgs = m.get("imgs", [])
-    if kind == "video" and m.get("youtube"):
-        body = (f'<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/{m["youtube"]}" title="{esc(cap[0])}" '
-                f'loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>')
-    elif kind == "galeria":
-        body = '<div class="galeria">' + "".join(
-            f'<div class="ph ph-4x3">{media_tag("img", u)}<span class="ph-ico"><i class="fa-regular fa-image"></i></span></div>' for u in imgs[:3]) + "</div>"
-    else:   # infografía o video sin enlace: imagen relacionada
-        cont = " contain" if kind == "infografia" and m.get("contain") else ""
-        body = f'<div class="ph ph-16x9{cont}">{media_tag("img", imgs[0])}<span class="ph-ico"><i class="fa-regular fa-image"></i></span></div>'
-    return f'<figure>{body}<figcaption data-en="{esc(cap[1])}">{cap[0]}</figcaption></figure>'
+def audio_block(a):
+    src = f"assets/articulos/{a['slug']}.mp3"
+    if not os.path.exists(os.path.join(ROOT, src)):
+        return ""
+    return (f'\n      <figure style="margin-top:24px"><figcaption class="eyebrow" style="margin-bottom:8px" data-en="Listen to this article">Escucha este artículo</figcaption>'
+            f'<audio controls preload="none" src="{src}" style="width:100%"></audio></figure>')
 
 def build_article(a):
-    s = a["slug"]; f = fecha_larga(a["fecha"]); m = mins(a)
-    others = [x for x in ARTICULOS if x is not a]
+    s = a["slug"]; f = fecha_larga(a["fecha"])
     i = ARTICULOS.index(a)
     rel = [ARTICULOS[(i + k) % len(ARTICULOS)] for k in (1, 2, 3)]
     wa_text = (f"Hola Gabriela, leí tu artículo «{a['titulo'][0]}» y me gustaría asesoría.",
                f"Hello Gabriela, I read your article “{a['titulo'][1]}” and I would like some advice.")
-    from urllib.parse import quote
     wa_es, wa_en = WA + quote(wa_text[0]), WA + quote(wa_text[1])
-    ld = (f'\n    <script type="application/ld+json">{{"@context":"https://schema.org","@type":"Article","headline":"{a["titulo"][0]}",'
-          f'"datePublished":"{a["fecha"][0]}-{a["fecha"][1]:02d}-{a["fecha"][2]:02d}","author":{{"@type":"Person","name":"{AUTORA["nombre"]}"}},'
+    ld = ('\n<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article",'
+          f'"headline":"{a["titulo"][0]}","description":"{a["deck"][0]}","datePublished":"{iso(a["fecha"])}",'
+          f'"author":{{"@type":"Person","name":"{AUTORA["nombre"]}","url":"{DOMINIO}/"}},'
           f'"inLanguage":"es","mainEntityOfPage":"{DOMINIO}/articulo-{s}.html"}}</script>')
-    out = head(a["titulo"], a["deck"], f"articulo-{s}.html", ld)
-    out += f'''    <div class="progreso" id="progreso"></div>
-    <nav class="navbar">
-        <a href="index.html">{T("Inicio", "Home")}</a>
-        <a href="blog.html">{T("Perspectivas", "Insights")}</a>
-        <a href="index.html#contacto">{T("Contacto", "Contact")}</a>
-        {NAV_LANG}
-    </nav>
+    meta = (f'{f[0]} · {a["mins"]} min de lectura', f'{f[1]} · {a["mins"]} min read')
 
-    <main class="art-wrap">
-        <header class="art-head">
-            <a href="blog.html" class="volver"><i class="fa-solid fa-arrow-left"></i> {T("Volver a Perspectivas", "Back to Insights")}</a>
-            <div class="art-kicker">{cat_html(a)}<span class="borrador" data-en="Draft">Borrador</span></div>
-            <h1 data-en="{esc(a["titulo"][1])}">{a["titulo"][0]}</h1>
-            <p class="deck" data-en="{esc(a["deck"][1])}">{a["deck"][0]}</p>
-            <div class="art-by">
-                <div class="who">
-                    {autor_img()}
-                    <div>
-                        <strong>{AUTORA["nombre"]}</strong>
-                        <span>{T(AUTORA["rol"][0], AUTORA["rol"][1])} · {T(f[0], f[1])} · {T(m[0], m[1])}</span>
-                    </div>
-                </div>
-                <div class="share" aria-label="Compartir" data-en-aria-label="Share">
-                    <a id="sh-li" href="#" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a id="sh-wa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-                    <button id="sh-copy" type="button" aria-label="Copiar enlace" data-en-aria-label="Copy link"><i class="fa-solid fa-link"></i></button>
-                </div>
-            </div>
-        </header>
+    out = head(a["titulo"], a["deck"], f"articulo-{s}.html", "article", ld)
+    out += '<div class="progreso" id="progreso" aria-hidden="true"></div>'
+    out += header("blog.html")
+    out += f'''
+<main id="main">
+  <article>
+    <div class="wrap">
+      <header class="art-head reveal">
+        <a href="blog.html" class="volver" data-en="← Back to Insights">← Volver a Perspectivas</a>
+        <p class="eyebrow">{T(a["cat"][0], a["cat"][1], "b")}</p>
+        <h1 data-en="{esc(a["titulo"][1])}">{a["titulo"][0]}</h1>
+        <p class="deck" data-en="{esc(a["deck"][1])}">{a["deck"][0]}</p>
+        <div class="art-by">
+          <div class="byline">{autor_img()}<div>{AUTORA["nombre"]}<span><time datetime="{iso(a["fecha"])}" data-en="{esc(meta[1])}">{meta[0]}</time></span></div></div>
+          <div class="share" role="group" aria-label="Compartir" data-en-aria-label="Share">
+            <a id="sh-li" href="https://www.linkedin.com/sharing/share-offsite/?url={quote(DOMINIO + "/articulo-" + s + ".html", safe="")}" target="_blank" rel="noopener" aria-label="Compartir en LinkedIn" data-en-aria-label="Share on LinkedIn">{SVG_LI}</a>
+            <a id="sh-wa" href="https://wa.me/?text={quote(DOMINIO + "/articulo-" + s + ".html", safe="")}" target="_blank" rel="noopener" aria-label="Compartir por WhatsApp" data-en-aria-label="Share on WhatsApp">{SVG_WA}</a>
+            <button id="sh-copy" type="button" aria-label="Copiar enlace" data-en-aria-label="Copy link">{SVG_LINK}</button>
+            <span id="sh-status" class="sr-only" aria-live="polite"></span>
+          </div>
+        </div>{audio_block(a)}
+      </header>
 
-        <div class="art-audio">
-            <div class="ph ph-audio">{media_tag("audio", f"assets/articulos/{s}.mp3")}
-                <span class="ph-ico"><i class="fa-solid fa-play"></i></span>
-                <span><span class="t" data-en="Listen to this article">Escucha este artículo</span><br><span class="d">{a["mins"]} min · <span data-en="Audio placeholder">Audio (placeholder)</span></span></span>
-                <span class="bars" aria-hidden="true">{"".join("<span></span>" for _ in range(28))}</span>
-            </div>
+      <div class="art-grid">
+        <div class="prose">
+        {render_blocks(a)}
         </div>
+        <aside class="esencial" aria-labelledby="esencial-t">
+          <h2 id="esencial-t" data-en="Key takeaways">Lo esencial</h2>
+          <ul>{"".join(f'<li data-en="{esc(y)}">{x}</li>' for x, y in zip(a["esencial"][0], a["esencial"][1]))}</ul>
+        </aside>
+      </div>
 
-        <figure class="art-hero">
-            <div class="ph ph-16x9{" contain" if MEDIA[s].get("contain") else ""}">{media_tag("img", MEDIA[s]["hero"])}<span class="ph-ico"><i class="fa-regular fa-image"></i></span></div>
-            <figcaption data-en="{esc(MEDIA[s]["hero_cap"][1])}">{MEDIA[s]["hero_cap"][0]}</figcaption>
-        </figure>
-
-        <div class="art-body">
-            <aside class="esencial">
-                <h3 data-en="Key takeaways">Lo esencial</h3>
-                <ul>{"".join(f'<li data-en="{esc(y)}">{x}</li>' for x, y in zip(a["esencial"][0], a["esencial"][1]))}</ul>
-            </aside>
-            {render_blocks(a, 0)}
+      <section class="autora" aria-label="Sobre la autora" data-en-aria-label="About the author">
+        {autor_img(88)}
+        <div>
+          <p class="eyebrow" data-en="About the author">Sobre la autora</p>
+          <h2>{AUTORA["nombre"]}</h2>
+          <p data-en="{esc(AUTORA["bio"][1])}">{AUTORA["bio"][0]}</p>
         </div>
+      </section>
+    </div>
+  </article>
 
-        <section class="autora-card">
-            {autor_img()}
-            <div>
-                <small data-en="About the author">Sobre la autora</small>
-                <h3>{AUTORA["nombre"]}</h3>
-                <p data-en="{esc(AUTORA["bio"][1])}">{AUTORA["bio"][0]}</p>
-            </div>
-        </section>
+  <section class="art-cta dark" aria-labelledby="cta-t">
+    <div class="wrap">
+      <div>
+        <h2 id="cta-t" data-en="Need advice on this topic?">¿Necesita asesoría en este tema?</h2>
+        <p data-en="Let’s schedule an initial consultation to assess where your organization stands.">Agendemos una consulta inicial para evaluar el estado actual de su organización.</p>
+      </div>
+      <a href="{wa_es}" data-en-href="{wa_en}" target="_blank" rel="noopener" class="btn btn-solid">{SVG_WA}<span data-en="Message on WhatsApp">Escribir por WhatsApp</span></a>
+    </div>
+  </section>
 
-        <section class="art-cta">
-            <h3 data-en="Need advice on this topic?">¿Necesitas asesoría en este tema?</h3>
-            <p data-en="Let’s schedule an initial consultation to assess where your organization stands.">Agendemos una consulta inicial para evaluar el estado actual de tu organización.</p>
-            <a href="{wa_es}" data-en-href="{wa_en}" target="_blank" rel="noopener" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> {T("Contactar por WhatsApp", "Contact via WhatsApp")}</a>
-        </section>
-
-        <section class="relacionados">
-            <h3 data-en="You may also like">También te puede interesar</h3>
-            <div class="blog-grid">
-                {"".join(card(r) for r in rel)}
-            </div>
-        </section>
-    </main>
+  <section class="relacionados" aria-labelledby="rel-t">
+    <div class="wrap">
+      <h2 id="rel-t" data-en="Keep reading">Siga leyendo</h2>
+      <div class="posts draw">{"".join(post_row(r) for r in rel)}
+      </div>
+    </div>
+  </section>
+</main>
 '''
-    out += footer(FOOT_LINKS)
+    out += footer()
     open(os.path.join(ROOT, f"articulo-{s}.html"), "w", encoding="utf-8").write(out)
 
 # ------------------------------------------------------------------ BLOG
 def build_blog():
-    lead = ARTICULOS[0]; rest = ARTICULOS[1:]
-    f = fecha_larga(lead["fecha"]); m = mins(lead)
+    lead, rest = ARTICULOS[0], ARTICULOS[1:]
+    f = fecha_larga(lead["fecha"])
+    meta = (f'{f[0]} · {lead["mins"]} min de lectura', f'{f[1]} · {lead["mins"]} min read')
     cats = []
     for a in ARTICULOS:
         if a["cat"] not in cats: cats.append(a["cat"])
-    chips = f'<button class="on" data-f="*" type="button">{T("Todos", "All")}</button>' + "".join(
-        f'<button data-f="{esc(c[0])}" type="button">{T(c[0], c[1])}</button>' for c in cats)
-    out = head(("Perspectivas — Gabriela L. González Vázquez", "Insights — Gabriela L. González Vázquez"),
-               ("Análisis, guías y reflexiones sobre gobernanza corporativa, AI Governance, compliance y protección de datos.",
-                "Analysis, guides and reflections on corporate governance, AI governance, compliance and data protection."), "blog.html")
-    out = out.replace('og:type" content="article"', 'og:type" content="website"')
-    out += f'''    <nav class="navbar">
-        <a href="index.html">{T("Inicio", "Home")}</a>
-        <a href="index.html#sobre-mi">{T("Sobre mí", "About me")}</a>
-        <a href="index.html#experiencia">{T("Experiencia", "Experience")}</a>
-        <a href="blog.html">{T("Perspectivas", "Insights")}</a>
-        <a href="index.html#contacto">{T("Contacto", "Contact")}</a>
-        {NAV_LANG}
-    </nav>
+    chips = f'<button type="button" data-f="*" aria-pressed="true" data-en="All">Todos</button>' + "".join(
+        f'<button type="button" data-f="{esc(c[0])}" aria-pressed="false" data-en="{esc(c[1])}">{c[0]}</button>' for c in cats)
 
-    <header class="masthead">
-        <div class="mast-top">{T("Blog Legal", "Legal Blog")}</div>
-        <h1>{T("Perspectivas", "Insights")}</h1>
-        <p>{T("Análisis, guías y reflexiones sobre gobernanza corporativa, AI Governance, compliance y protección de datos.",
-              "Analysis, guides and reflections on corporate governance, AI governance, compliance and data protection.")}</p>
-        <div class="mast-rule"></div>
+    out = head(("Perspectivas — Gabriela L. González Vázquez", "Insights — Gabriela L. González Vázquez"),
+               ("Análisis sobre gobernanza corporativa, AI Governance, compliance y protección de datos.",
+                "Analysis on corporate governance, AI governance, compliance and data protection."), "blog.html", "website")
+    out += header("blog.html")
+    out += f'''
+<main id="main">
+  <div class="wrap">
+    <header class="masthead reveal">
+      <p class="eyebrow" data-en="Legal analysis">Análisis legal</p>
+      <h1 data-en="Insights">Perspectivas</h1>
+      <p data-en="Practical analysis on corporate governance, AI governance, compliance and data protection, written for companies that need to decide.">Análisis práctico sobre gobernanza corporativa, AI Governance, compliance y protección de datos, escrito para empresas que necesitan decidir.</p>
     </header>
 
-    <section class="blog-lista">
-        <div class="filtros" id="filtros">{chips}</div>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por tema" data-en-aria-label="Filter by topic">{chips}</div>
 
-        <article class="lead-story" id="lead" data-catname="{esc(lead["cat"][0])}">
-            <a class="ph ph-16x9" href="articulo-{lead["slug"]}.html" aria-label="{esc(lead["titulo"][0])}" data-en-aria-label="{esc(lead["titulo"][1])}">
-                {media_tag("img", MEDIA[lead["slug"]]["thumb"])}
-                <span class="ph-ico"><i class="fa-regular fa-image"></i></span>
-                <span class="ph-label" data-en="Featured image">Imagen destacada</span>
-            </a>
-            <div>
-                {cat_html(lead)}
-                <h2><a href="articulo-{lead["slug"]}.html" style="color:inherit;text-decoration:none">{T(lead["titulo"][0], lead["titulo"][1])}</a></h2>
-                <p class="deck">{T(lead["deck"][0], lead["deck"][1])}</p>
-                <div class="byline">{autor_img()} <b>{AUTORA["nombre"]}</b><span class="dot">•</span>{T(f[0], f[1])}<span class="dot">•</span>{T(m[0], m[1])}</div>
-            </div>
-        </article>
+    <article class="lead-post reveal" data-catname="{esc(lead["cat"][0])}">
+      <div>
+        <p class="eyebrow">{T(lead["cat"][0], lead["cat"][1], "b", extra='style="color:var(--accent);font-weight:500"')}</p>
+        <h2 style="margin-top:14px"><a href="articulo-{lead["slug"]}.html" data-en="{esc(lead["titulo"][1])}">{lead["titulo"][0]}</a></h2>
+        <p class="deck" data-en="{esc(lead["deck"][1])}">{lead["deck"][0]}</p>
+      </div>
+      <aside>
+        <div class="byline">{autor_img()}<div>{AUTORA["nombre"]}<span data-en="{esc(meta[1])}">{meta[0]}</span></div></div>
+        <span class="link" aria-hidden="true" data-en="Read the article →">Leer el artículo →</span>
+      </aside>
+    </article>
 
-        <div class="blog-grid" id="grid">
-            {"".join(card(a) for a in rest)}
-        </div>
-    </section>
+    <div class="posts draw" style="margin-bottom:clamp(72px,10vw,136px)">{"".join(post_row(a) for a in rest)}
+    </div>
+  </div>
+</main>
 '''
-    out += footer(f'<a href="privacidad.html">{T("Aviso de Privacidad", "Privacy Notice")}</a> | <a href="index.html">{T("Inicio", "Home")}</a>')
+    out += footer()
     open(os.path.join(ROOT, "blog.html"), "w", encoding="utf-8").write(out)
 
 if __name__ == "__main__":
     for a in ARTICULOS: build_article(a)
     build_blog()
-    # el antiguo articulo.html pasa a redirigir al primer artículo (no rompe enlaces viejos)
+    first = ARTICULOS[0]["slug"]
     open(os.path.join(ROOT, "articulo.html"), "w", encoding="utf-8").write(
-        f'<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=articulo-{ARTICULOS[0]["slug"]}.html">'
-        f'<link rel="canonical" href="{DOMINIO}/articulo-{ARTICULOS[0]["slug"]}.html"><title>Perspectivas</title></head>'
-        f'<body><a href="articulo-{ARTICULOS[0]["slug"]}.html">Ir al artículo</a></body></html>')
+        f'<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=articulo-{first}.html">'
+        f'<link rel="canonical" href="{DOMINIO}/articulo-{first}.html"><title>Perspectivas</title></head>'
+        f'<body><a href="articulo-{first}.html">Ir al artículo</a></body></html>')
     print("OK:", len(ARTICULOS), "artículos + blog.html")
