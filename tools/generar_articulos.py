@@ -126,17 +126,27 @@ def footer():
 </html>
 '''
 
-def post_row(a, reveal=True):
+def portada(a, eager=False):
+    """Portada de la tarjeta: usa assets/articulos/<slug>.jpg si existe; si no, una portada tipográfica."""
+    foto = f"assets/articulos/{a['slug']}.jpg"
+    if os.path.exists(os.path.join(ROOT, foto)):
+        return f'<div class="cover"><img src="{foto}" alt="" {"" if eager else "loading=\"lazy\""}></div>'
+    w_es, w_en = a["cat"][0].split()[0], a["cat"][1].split()[0]
+    return (f'<div class="cover" aria-hidden="true"><div class="cover-art">'
+            f'<small data-en="{esc(a["cat"][1])}">{a["cat"][0]}</small><b data-en="{esc(w_en)}">{w_es}</b></div></div>')
+
+def card(a, reveal=True):
     f = fecha_corta(a["fecha"])
     meta = (f'{f[0]} · {a["mins"]} min', f'{f[1]} · {a["mins"]} min')
     return f'''
-      <article class="post{" reveal" if reveal else ""}" data-catname="{esc(a["cat"][0])}">
-        <p class="eyebrow">{T(a["cat"][0], a["cat"][1], "b")}{T(meta[0], meta[1])}</p>
-        <div>
+      <article class="card{" reveal" if reveal else ""}" data-catname="{esc(a["cat"][0])}">
+        {portada(a)}
+        <div class="card-body">
+          <p class="card-cat" data-en="{esc(a["cat"][1])}">{a["cat"][0]}</p>
           <h3><a href="articulo-{a["slug"]}.html" data-en="{esc(a["titulo"][1])}">{a["titulo"][0]}</a></h3>
           <p data-en="{esc(a["deck"][1])}">{a["deck"][0]}</p>
+          <div class="card-meta"><span data-en="{esc(meta[1])}">{meta[0]}</span><span class="go" aria-hidden="true" data-en="Read →">Leer →</span></div>
         </div>
-        <span class="go" aria-hidden="true" data-en="Read →">Leer →</span>
       </article>'''
 
 # ------------------------------------------------------------------ ARTÍCULO
@@ -233,20 +243,20 @@ def build_article(a):
     </div>
   </article>
 
-  <section class="art-cta dark" aria-labelledby="cta-t">
+  <section class="art-cta band-blue" aria-labelledby="cta-t">
     <div class="wrap">
       <div>
         <h2 id="cta-t" data-en="Need advice on this topic?">¿Necesita asesoría en este tema?</h2>
         <p data-en="Let’s schedule an initial consultation to assess where your organization stands.">Agendemos una consulta inicial para evaluar el estado actual de su organización.</p>
       </div>
-      <a href="{wa_es}" data-en-href="{wa_en}" target="_blank" rel="noopener" class="btn btn-solid">{SVG_WA}<span data-en="Message on WhatsApp">Escribir por WhatsApp</span></a>
+      <a href="{wa_es}" data-en-href="{wa_en}" target="_blank" rel="noopener" class="btn btn-white">{SVG_WA}<span data-en="Message on WhatsApp">Escribir por WhatsApp</span></a>
     </div>
   </section>
 
   <section class="relacionados" aria-labelledby="rel-t">
     <div class="wrap">
       <h2 id="rel-t" data-en="Keep reading">Siga leyendo</h2>
-      <div class="posts draw">{"".join(post_row(r) for r in rel)}
+      <div class="cards stagger">{"".join(card(r) for r in rel)}
       </div>
     </div>
   </section>
@@ -256,6 +266,17 @@ def build_article(a):
     open(os.path.join(ROOT, f"articulo-{s}.html"), "w", encoding="utf-8").write(out)
 
 # ------------------------------------------------------------------ BLOG
+def build_index():
+    """Inserta las tres publicaciones más recientes en index.html y el ícono de WhatsApp."""
+    p = os.path.join(ROOT, "index.html")
+    h = open(p, encoding="utf-8").read()
+    ini, fin = "<!--CARDS-->", "<!--/CARDS-->"
+    if ini in h:
+        a, b = h.index(ini), (h.index(fin) + len(fin) if fin in h else h.index(ini) + len(ini))
+        h = h[:a] + ini + "".join(card(x) for x in ARTICULOS[:3]) + "\n" + fin + h[b:]
+    h = h.replace('<path d="__WA__"/>', SVG_WA[SVG_WA.index("<path"):SVG_WA.index("</svg>")])
+    open(p, "w", encoding="utf-8").write(h)
+
 def build_blog():
     lead, rest = ARTICULOS[0], ARTICULOS[1:]
     f = fecha_larga(lead["fecha"])
@@ -272,28 +293,26 @@ def build_blog():
     out += header("blog.html")
     out += f'''
 <main id="main">
-  <div class="wrap">
+  <div class="wrap blog-wrap">
     <header class="masthead reveal">
-      <p class="eyebrow" data-en="Legal analysis">Análisis legal</p>
+      <span class="pill" data-en="Legal analysis">Análisis legal</span>
       <h1 data-en="Insights">Perspectivas</h1>
       <p data-en="Practical analysis on corporate governance, AI governance, compliance and data protection, written for companies that need to decide.">Análisis práctico sobre gobernanza corporativa, AI Governance, compliance y protección de datos, escrito para empresas que necesitan decidir.</p>
     </header>
 
     <div class="filtros" id="filtros" role="group" aria-label="Filtrar por tema" data-en-aria-label="Filter by topic">{chips}</div>
 
-    <article class="lead-post reveal" data-catname="{esc(lead["cat"][0])}">
-      <div>
-        <p class="eyebrow">{T(lead["cat"][0], lead["cat"][1], "b", extra='style="color:var(--accent);font-weight:500"')}</p>
-        <h2 style="margin-top:14px"><a href="articulo-{lead["slug"]}.html" data-en="{esc(lead["titulo"][1])}">{lead["titulo"][0]}</a></h2>
-        <p class="deck" data-en="{esc(lead["deck"][1])}">{lead["deck"][0]}</p>
+    <article class="card lead-card reveal" data-catname="{esc(lead["cat"][0])}">
+      {portada(lead, True)}
+      <div class="card-body">
+        <p class="card-cat" data-en="{esc(lead["cat"][1])}">{lead["cat"][0]}</p>
+        <h2><a href="articulo-{lead["slug"]}.html" data-en="{esc(lead["titulo"][1])}">{lead["titulo"][0]}</a></h2>
+        <p data-en="{esc(lead["deck"][1])}">{lead["deck"][0]}</p>
+        <div class="card-meta"><div class="byline">{autor_img()}<div>{AUTORA["nombre"]}<span data-en="{esc(meta[1])}">{meta[0]}</span></div></div><span class="go" aria-hidden="true" data-en="Read →">Leer →</span></div>
       </div>
-      <aside>
-        <div class="byline">{autor_img()}<div>{AUTORA["nombre"]}<span data-en="{esc(meta[1])}">{meta[0]}</span></div></div>
-        <span class="link" aria-hidden="true" data-en="Read the article →">Leer el artículo →</span>
-      </aside>
     </article>
 
-    <div class="posts draw" style="margin-bottom:clamp(72px,10vw,136px)">{"".join(post_row(a) for a in rest)}
+    <div class="cards stagger">{"".join(card(a) for a in rest)}
     </div>
   </div>
 </main>
@@ -304,6 +323,7 @@ def build_blog():
 if __name__ == "__main__":
     for a in ARTICULOS: build_article(a)
     build_blog()
+    build_index()
     first = ARTICULOS[0]["slug"]
     open(os.path.join(ROOT, "articulo.html"), "w", encoding="utf-8").write(
         f'<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=articulo-{first}.html">'

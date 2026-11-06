@@ -74,8 +74,10 @@
 
     // 3a. Entrada de la portada
     requestAnimationFrame(function () { requestAnimationFrame(function () { doc.classList.add('loaded'); }); });
-    var heroFig = document.querySelector('.hero-figure');
-    if (heroFig) setTimeout(function () { heroFig.classList.add('settled'); }, 2100);
+    // tras la entrada, la portada responde al scroll sin retardo
+    setTimeout(function () {
+        document.querySelectorAll('.hero-card, .hero-media').forEach(function (el) { el.classList.add('settled'); });
+    }, 2600);
 
     // 3b. Aparición al entrar en pantalla
     if (animar) {
@@ -87,7 +89,7 @@
                 io.unobserve(en.target);
             });
         }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
-        document.querySelectorAll('.reveal, .reveal-img, .draw, [data-count]').forEach(function (el) { io.observe(el); });
+        document.querySelectorAll('.reveal, .reveal-img, .t-item, [data-count]').forEach(function (el) { io.observe(el); });
     }
 
     // 3c. Contadores (12+, 20+…)
@@ -136,9 +138,9 @@
         visibles.forEach(function (el) {
             var r = el.getBoundingClientRect();
             var modo = el.getAttribute('data-progress');
-            var p = modo === 'center'
-                ? (vh * 0.85 - r.top) / (r.height * 0.9 + vh * 0.35)
-                : (vh - r.top) / (vh + r.height);
+            var p = modo === 'center' ? (vh * 0.85 - r.top) / (r.height * 0.9 + vh * 0.35)
+                  : modo === 'exit' ? -r.top / r.height
+                  : (vh - r.top) / (vh + r.height);
             p = Math.max(0, Math.min(1, p));
             el.style.setProperty('--p', p.toFixed(4));
             var ws = el.querySelectorAll('.w');
@@ -147,7 +149,7 @@
                 ws.forEach(function (w, i) { w.classList.toggle('lit', i < n); });
             }
         });
-        if (pasos.length && window.innerWidth > 960) {
+        if (pasos.length && window.innerWidth > 1000) {
             var mejor = 0, dist = Infinity;
             pasos.forEach(function (li, i) {
                 var r = li.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2);
@@ -182,6 +184,66 @@
     window.addEventListener('scroll', alScroll, { passive: true });
     window.addEventListener('resize', alScroll, { passive: true });
     alScroll();
+
+    /* ---------- 3g. FRASE ROTATIVA DE LA PORTADA ---------- */
+    var rot = document.querySelector('.rotativo span');
+    var FRASES = {
+        es: ['Gobernanza Corporativa', 'AI Governance', 'Compliance Regulatorio', 'Contratos y Transacciones', 'Protección de Datos', 'Propiedad Intelectual'],
+        en: ['Corporate Governance', 'AI Governance', 'Regulatory Compliance', 'Contracts & Transactions', 'Data Protection', 'Intellectual Property']
+    };
+    var iFrase = 0;
+    function frases() { return FRASES[doc.lang === 'en' ? 'en' : 'es']; }
+    if (rot) {
+        document.addEventListener('idioma', function () { rot.textContent = frases()[iFrase % frases().length]; });
+        if (!reduce) setInterval(function () {
+            if (document.hidden) return;
+            rot.classList.add('out');
+            setTimeout(function () {
+                iFrase = (iFrase + 1) % frases().length;
+                rot.textContent = frases()[iFrase];
+                rot.classList.remove('out'); rot.classList.add('pre');
+                void rot.offsetWidth;
+                rot.classList.remove('pre');
+            }, 450);
+        }, 2800);
+    }
+
+    /* ---------- 3h. VIDEOS: pausa accesible y "reducir movimiento" ---------- */
+    document.querySelectorAll('video[data-auto]').forEach(function (v) {
+        if (reduce) { v.removeAttribute('autoplay'); v.pause(); }
+        else { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+    });
+    var vBtn = document.querySelector('.video-toggle');
+    var vHero = document.querySelector('.hero-media video');
+    if (vBtn && vHero) {
+        function sync() {
+            var pausado = vHero.paused;
+            vBtn.setAttribute('aria-pressed', pausado ? 'true' : 'false');
+            vBtn.setAttribute('aria-label', doc.lang === 'en' ? (pausado ? 'Play video' : 'Pause video') : (pausado ? 'Reproducir video' : 'Pausar video'));
+        }
+        vBtn.addEventListener('click', function () { if (vHero.paused) vHero.play(); else vHero.pause(); });
+        vHero.addEventListener('play', sync); vHero.addEventListener('pause', sync);
+        document.addEventListener('idioma', sync); sync();
+    }
+
+    /* ---------- 3i. CARRUSEL DE LA UNIVERSIDAD ---------- */
+    document.querySelectorAll('.carousel').forEach(function (car) {
+        var slides = car.querySelectorAll('.slide'), dots = car.querySelectorAll('.dots button'), cap = car.querySelector('.carousel-ui p');
+        var i = 0, timer = null;
+        function ir(n) {
+            i = (n + slides.length) % slides.length;
+            slides.forEach(function (s, k) { s.classList.toggle('active', k === i); s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
+            dots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+            if (cap) cap.textContent = slides[i].querySelector('img').alt;
+        }
+        function auto() { if (reduce) return; clearInterval(timer); timer = setInterval(function () { if (!document.hidden) ir(i + 1); }, 5200); }
+        dots.forEach(function (d, k) { d.addEventListener('click', function () { ir(k); auto(); }); });
+        car.addEventListener('mouseenter', function () { clearInterval(timer); });
+        car.addEventListener('mouseleave', auto);
+        car.addEventListener('focusin', function () { clearInterval(timer); });
+        document.addEventListener('idioma', function () { ir(i); });
+        ir(0); auto();
+    });
 
     /* ---------- 4. COMPARTIR ---------- */
     var url = encodeURIComponent(location.href), titulo = encodeURIComponent(document.title);
