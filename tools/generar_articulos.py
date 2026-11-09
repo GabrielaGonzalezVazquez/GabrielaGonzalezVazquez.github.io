@@ -82,9 +82,9 @@ def head(titulo, desc, path, og_type="article", extra=""):
 '''
 
 def header(actual=""):
-    links = [("index.html#sobre-mi", "Perfil", "About"), ("index.html#servicios", "Áreas", "Practice"),
+    links = [("index.html#sobre-mi", "Sobre mí", "About me"), ("areas.html", "Áreas", "Practice"),
              ("index.html#experiencia", "Experiencia", "Experience"), ("blog.html", "Perspectivas", "Insights"),
-             ("index.html#contacto", "Contacto", "Contact")]
+             ("recursos.html", "Recursos", "Resources"), ("index.html#contacto", "Contacto", "Contact")]
     nav = "\n      ".join(
         f'<a href="{h}"{" aria-current=" + chr(34) + "page" + chr(34) if h == actual else ""} data-en="{esc(en)}">{es}</a>'
         for h, es, en in links)
@@ -115,6 +115,8 @@ def footer():
     <nav aria-label="Pie de página" data-en-aria-label="Footer">
       <a href="index.html" data-en="Home">Inicio</a>
       <a href="blog.html" data-en="Insights">Perspectivas</a>
+      <a href="recursos.html" data-en="Resources">Recursos</a>
+      <a href="glosario.html" data-en="Glossary">Glosario</a>
       <a href="privacidad.html" data-en="Privacy notice">Aviso de privacidad</a>
       <a href="aviso-legal.html" data-en="Legal notice">Aviso legal</a>
     </nav>

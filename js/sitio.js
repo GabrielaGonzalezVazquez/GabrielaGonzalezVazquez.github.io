@@ -245,6 +245,95 @@
         ir(0); auto();
     });
 
+    /* ---------- 3j. CONTACTO GUIADO: arma el mensaje; no envía ni guarda nada ---------- */
+    var guiado = document.getElementById('guiado');
+    if (guiado) {
+        var WA_NUM = '525537179626', CORREO = 'ggv@blic.com.mx';
+        var msgEl = document.getElementById('guiado-msg'), btnWa = document.getElementById('guiado-wa'), btnMail = document.getElementById('guiado-mail');
+        var vacio = msgEl.innerHTML;
+        function elegido(nombre) {
+            var r = guiado.querySelector('input[name="' + nombre + '"]:checked');
+            return r ? r.parentNode.querySelector('span').textContent.trim() : '';
+        }
+        function armar() {
+            var en = doc.lang === 'en';
+            var area = elegido('area'), tipo = elegido('tipo'), urg = elegido('urgencia');
+            var nombre = guiado.nombre.value.trim(), detalle = guiado.detalle.value.trim();
+            if (!area && !tipo && !urg && !detalle) {
+                msgEl.innerHTML = en ? (msgEl.getAttribute('data-en') || vacio) : vacio;
+                [btnWa, btnMail].forEach(function (b) { b.setAttribute('aria-disabled', 'true'); });
+                return;
+            }
+            var l = [];
+            l.push(en ? 'Hello Gabriela' + (nombre ? ', my name is ' + nombre : '') + '.' : 'Hola Gabriela' + (nombre ? ', soy ' + nombre : '') + '.');
+            if (area) l.push(en ? 'I would like advice on: ' + area + '.' : 'Me gustaría asesoría en: ' + area + '.');
+            if (tipo) l.push(en ? 'Organization: ' + tipo + '.' : 'Tipo de organización: ' + tipo + '.');
+            if (urg) l.push(en ? 'Timing: ' + urg + '.' : 'Plazo: ' + urg + '.');
+            if (detalle) l.push((en ? 'Details: ' : 'Detalle: ') + detalle);
+            var texto = l.join('\n');
+            msgEl.textContent = texto;
+            btnWa.href = 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent(texto);
+            var asunto = (en ? 'Consultation' : 'Consulta') + (area ? ' — ' + area : '');
+            btnMail.href = 'mailto:' + CORREO + '?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(texto);
+            [btnWa, btnMail].forEach(function (b) { b.removeAttribute('aria-disabled'); });
+        }
+        guiado.addEventListener('input', armar);
+        guiado.addEventListener('change', armar);
+        guiado.addEventListener('submit', function (e) { e.preventDefault(); });
+        document.addEventListener('idioma', armar);
+        var pre = new URLSearchParams(location.search).get('area');
+        if (pre) { var r = guiado.querySelector('input[name="area"][value="' + pre.replace(/[^a-z-]/g, '') + '"]'); if (r) r.checked = true; }
+        armar();
+    }
+
+    /* ---------- 3k. AUTOEVALUACIÓN ---------- */
+    var quiz = document.getElementById('quiz');
+    if (quiz) {
+        var nq = quiz.querySelectorAll('.q').length;
+        quiz.addEventListener('change', function () {
+            var resp = quiz.querySelectorAll('.q input:checked'), total = 0;
+            resp.forEach(function (r) { total += +r.value; });
+            quiz.querySelector('.quiz-bar').style.setProperty('--q', resp.length / nq);
+            var listo = resp.length === nq;
+            quiz.querySelector('.quiz-hint').hidden = listo;
+            quiz.querySelector('.quiz-cta').hidden = !listo;
+            var sc = quiz.querySelector('.quiz-score'); sc.hidden = !listo; sc.querySelector('b').textContent = total;
+            var res = quiz.querySelectorAll('.quiz-res'), elegido = null;
+            res.forEach(function (x) { if (total >= +x.dataset.min) elegido = x; });
+            res.forEach(function (x) { x.hidden = !listo || x !== elegido; });
+        });
+    }
+
+    /* ---------- 3l. GUÍAS: avance y opción de imprimir solo una ---------- */
+    document.querySelectorAll('.guide-block').forEach(function (g) {
+        var b = g.querySelector('.guide-count b');
+        g.addEventListener('change', function () { b.textContent = g.querySelectorAll('.checklist input:checked').length; });
+    });
+    document.querySelectorAll('.btn-print').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var g = document.getElementById(btn.dataset.guide);
+            document.body.classList.add('print-guide'); g.classList.add('printing');
+            window.print();
+        });
+    });
+    window.addEventListener('afterprint', function () {
+        document.body.classList.remove('print-guide');
+        document.querySelectorAll('.printing').forEach(function (g) { g.classList.remove('printing'); });
+    });
+
+    /* ---------- 3m. GLOSARIO: búsqueda ---------- */
+    var glq = document.getElementById('gl-q');
+    if (glq) {
+        var terms = document.querySelectorAll('.term'), vacioGl = document.getElementById('gl-empty'), est = document.getElementById('gl-status');
+        var norm = function (t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+        glq.addEventListener('input', function () {
+            var q = norm(glq.value.trim()), n = 0;
+            terms.forEach(function (t) { var ok = !q || norm(t.textContent).indexOf(q) > -1; t.classList.toggle('oculto', !ok); if (ok) n++; });
+            vacioGl.hidden = n > 0;
+            est.textContent = q ? (doc.lang === 'en' ? n + ' terms found' : n + ' términos encontrados') : '';
+        });
+    }
+
     /* ---------- 4. COMPARTIR ---------- */
     var url = encodeURIComponent(location.href), titulo = encodeURIComponent(document.title);
     var li = document.getElementById('sh-li'), wa = document.getElementById('sh-wa'), cp = document.getElementById('sh-copy');

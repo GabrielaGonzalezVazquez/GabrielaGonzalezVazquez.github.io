@@ -13,7 +13,7 @@ from generar_articulos import head, header, footer
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 esc = lambda s: H.escape(s, quote=True)
 
-ACTUALIZADO = ("6 de noviembre de 2026", "November 6, 2026")
+ACTUALIZADO = ("9 de noviembre de 2026", "November 9, 2026")
 CORREO = '<a href="mailto:ggv@blic.com.mx">ggv@blic.com.mx</a>'
 
 
@@ -70,6 +70,8 @@ PRIV = [
     ("<strong>Datos técnicos de navegación</strong>: dirección IP, tipo de navegador, sistema operativo, fecha y hora de la visita y páginas solicitadas. Los registra el proveedor de alojamiento del sitio para fines de seguridad y funcionamiento; la Responsable no los utiliza para identificarle ni para elaborar perfiles.",
      "<strong>Technical browsing data</strong>: IP address, browser type, operating system, date and time of the visit and pages requested. They are logged by the site’s hosting provider for security and operational purposes; the Controller does not use them to identify you or to build profiles."),
   ]),
+  ("p", "<strong>Contacto guiado y autoevaluación.</strong> Las opciones que usted elige en el contacto guiado y las respuestas de la autoevaluación se procesan únicamente en su navegador para armar un mensaje o mostrar un resultado. No se envían a ningún servidor ni se guardan. Si decide enviar el mensaje, este se abre en su propia aplicación de WhatsApp o de correo, y a partir de ese momento aplica lo descrito en este aviso.",
+        "<strong>Guided contact and self-assessment.</strong> The options you choose in the guided contact and the answers in the self-assessment are processed only in your browser to compose a message or show a result. They are not sent to any server or stored. If you decide to send the message, it opens in your own WhatsApp or email app, and from then on this notice applies."),
   ("p", "<strong>Datos sensibles.</strong> No se solicitan datos personales sensibles a través de este sitio. Le pedimos no enviarlos por correo o WhatsApp en el primer contacto. Si para atender un asunto fuera indispensable tratarlos, se le informará previamente y se recabará su consentimiento expreso y por escrito.",
         "<strong>Sensitive data.</strong> No sensitive personal data is requested through this website. Please do not send it by email or WhatsApp in your first contact. If processing it became essential to handle a matter, you will be informed in advance and your express written consent will be obtained."),
   ("p", "<strong>Menores de edad.</strong> Este sitio no está dirigido a personas menores de 18 años y no se recaban sus datos de forma intencional.",
