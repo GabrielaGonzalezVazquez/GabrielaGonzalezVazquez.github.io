@@ -60,6 +60,8 @@ def head(titulo, desc, path, og_type="article", extra=""):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-en="{esc(t_en)}">{t_es}</title>
 <meta name="description" content="{esc(d_es)}" data-en-content="{esc(d_en)}">
 <meta name="author" content="{AUTORA["nombre"]}">

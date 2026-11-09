@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-en="Gabriela L. González Vázquez — Corporate &amp; Compliance Attorney">Gabriela L. González Vázquez — Abogada Corporativa y Compliance</title>
 <meta name="description" content="Abogada corporativa y de compliance en Ciudad de México. Gobernanza corporativa, AI Governance, contratos, protección de datos y propiedad intelectual. Más de 12 años de experiencia." data-en-content="Corporate and compliance attorney based in Mexico City. Corporate governance, AI governance, contracts, data protection and intellectual property. Over 12 years of experience.">
 <meta name="author" content="Gabriela L. González Vázquez">
@@ -24,6 +26,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Con qué tipo de organizaciones trabaja?","acceptedAnswer":{"@type":"Answer","text":"Startups de tecnología e inteligencia artificial, empresas en crecimiento y organismos del sector público, en México, Estados Unidos y Latinoamérica."}},{"@type":"Question","name":"¿Puede asesorar operaciones fuera de México?","acceptedAnswer":{"@type":"Answer","text":"Sí. Tengo experiencia con los sistemas jurídicos de Estados Unidos, Colombia, Perú y Guatemala, y trabajo en español e inglés."}},{"@type":"Question","name":"¿Qué es AI Governance y por qué le importa a mi empresa?","acceptedAnswer":{"@type":"Answer","text":"Es el conjunto de políticas, responsables y controles para usar inteligencia artificial de forma legal y ética. Clientes e inversionistas ya lo revisan durante la debida diligencia."}},{"@type":"Question","name":"¿Cuándo debe una startup formalizar su gobierno corporativo?","acceptedAnswer":{"@type":"Answer","text":"Idealmente antes de su primera ronda de inversión: actas al día, acuerdos claros entre socios y órganos de decisión definidos evitan retrasos en la debida diligencia."}},{"@type":"Question","name":"¿Cómo es la primera consulta?","acceptedAnswer":{"@type":"Answer","text":"Una conversación para entender su situación y definir alcance, tiempos y honorarios. Puede solicitarla por correo o por WhatsApp."}}]}</script>
 <link rel="preload" href="assets/fonts/newsreader-normal-latin-9.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/ibm-plex-sans-normal-latin-5.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/portada/idea.jpg" as="image">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
@@ -52,28 +55,52 @@
 
 <main id="main">
 
-<!-- PORTADA -->
-<section class="hero" data-progress="exit" aria-labelledby="hero-title">
-  <div class="hero-media" aria-hidden="true">
-    <video data-auto autoplay muted loop playsinline preload="auto" poster="assets/video-portada.jpg">
-      <source src="assets/video-portada.mp4" type="video/mp4">
-    </video>
-  </div>
-  <div class="hero-card">
-    <span class="pill pill-white" data-en="Corporate &amp; Compliance Attorney">Abogada Corporativa y Compliance</span>
-    <h1 id="hero-title"><span class="line"><span>Gabriela L.</span></span><span class="line"><span>González <em>Vázquez</em></span></span></h1>
-    <p class="rotativo" aria-hidden="true"><span>Gobernanza Corporativa</span></p>
-    <p class="hero-lede" data-en="Regulation, contracts, technology and AI governance. Over 12 years building legal solutions for companies in Mexico, the United States and Latin America.">Regulación, contratos, tecnología y AI Governance. Más de 12 años construyendo soluciones legales para empresas en México, Estados Unidos y Latinoamérica.</p>
-    <div class="hero-actions">
-      <a class="btn btn-white" href="#contacto" data-en="Let’s talk">Hablemos</a>
-      <a class="btn btn-line" href="#experiencia" data-en="View track record">Ver trayectoria</a>
+<!-- PORTADA: DE LA IDEA A LA LEY -->
+<section class="story" id="historia" aria-labelledby="hero-title">
+  <div class="stage">
+    <div class="scene s1" style="--fx:22%;--fy:84%;--oy:12%"><img src="assets/portada/idea.jpg" srcset="assets/portada/idea-m.jpg 1000w, assets/portada/idea.jpg 1649w" sizes="100vw" alt="El Greco, San Jerónimo como erudito, hacia 1610" decoding="async"></div>
+    <div class="scene s2" style="--fx:60%;--fy:74%;--oy:45%"><img src="assets/portada/equilibrio.jpg" srcset="assets/portada/equilibrio-m.jpg 1000w, assets/portada/equilibrio.jpg 1734w" sizes="100vw" alt="Petrus Christus, Un orfebre en su taller, 1449" decoding="async"></div>
+    <div class="scene s3" style="--fx:74%;--fy:58%;--ox:60%;--oy:50%"><img src="assets/portada/acuerdo.jpg" srcset="assets/portada/acuerdo-m.jpg 1000w, assets/portada/acuerdo.jpg 1625w" sizes="100vw" alt="Gerard ter Borch, Curiosidad, hacia 1660" decoding="async"></div>
+    <div class="scene s4" style="--fx:50%;--fy:45%"><img src="assets/portada/cielo.jpg" srcset="assets/portada/cielo-m.jpg 1000w, assets/portada/cielo.jpg 2000w" sizes="100vw" alt="Simon Denis, Estudio de nubes, hacia 1790" decoding="async"></div>
+    <div class="scene s5" style="--fx:30%;--fy:42%;--ox:30%"><img src="assets/portada/estructura.jpg" srcset="assets/portada/estructura-m.jpg 1000w, assets/portada/estructura.jpg 2000w" sizes="100vw" alt="Hubert Robert, Columnata en ruinas" decoding="async"></div>
+    
+    <div class="hero-card story-card" data-ch="0">
+      <span class="pill pill-white" data-en="Corporate &amp; Compliance Attorney">Abogada Corporativa y Compliance</span>
+      <h1 id="hero-title" style="font-size:clamp(2.6rem,6.8vw,5.2rem);font-weight:500;letter-spacing:-.035em;line-height:1;margin:22px 0 14px">Gabriela L.<br>González <em>Vázquez</em></h1>
+      <p class="rotativo" aria-hidden="true"><span>Gobernanza Corporativa</span></p>
+      <p class="hero-lede" data-en="Every law starts as an idea. I advise companies from that first moment until their rules sustain their growth.">Toda ley empieza como una idea. Acompaño a empresas desde ese primer momento hasta que sus reglas sostienen su crecimiento.</p>
+      <div class="hero-actions">
+        <a class="btn btn-white" href="#contacto" data-en="Let’s talk">Hablemos</a>
+        <a class="btn btn-line" href="#experiencia" data-en="View track record">Ver trayectoria</a>
+      </div>
     </div>
+
+    <div class="chapter" data-ch="1">
+      <span data-en="02 · Balance" class="k">02 · El equilibrio</span>
+      <h2 data-en="Between business and &lt;em&gt;regulation&lt;/em&gt;.">Entre el negocio y la <em>regulación</em>.</h2>
+      <p data-en="Every risk weighed with a goldsmith’s precision, so growth never means exposure.">Medimos cada riesgo con precisión de orfebre, para que crecer no signifique exponerse.</p>
+    </div>
+    <div class="chapter" data-ch="2">
+      <span data-en="03 · Agreement" class="k">03 · El acuerdo</span>
+      <h2 data-en="Contracts that are &lt;em&gt;honored&lt;/em&gt;.">Contratos que se <em>cumplen</em>.</h2>
+      <p data-en="Every word written with intent: clarity to negotiate, certainty to deliver.">Cada palabra escrita con intención: claridad para negociar y certeza para ejecutar.</p>
+    </div>
+    <div class="chapter" data-ch="3">
+      <span data-en="04 · The future" class="k">04 · El futuro</span>
+      <h2 data-en="Technology, data and AI with &lt;em&gt;rules&lt;/em&gt;.">Tecnología, datos e IA con <em>reglas</em>.</h2>
+      <p data-en="Governance for what has no law yet, built on the standards that anticipate it.">Gobernanza para lo que todavía no tiene ley, con los estándares que ya la anticipan.</p>
+    </div>
+    <div class="chapter" data-ch="4">
+      <span data-en="05 · Structure" class="k">05 · La estructura</span>
+      <h2 data-en="Governance that &lt;em&gt;sustains&lt;/em&gt; growth.">Gobernanza que <em>sostiene</em> el crecimiento.</h2>
+      <p data-en="Solid columns for companies built to last.">Columnas firmes para empresas que quieren durar.</p>
+      <a class="btn btn-white" href="#contacto" style="margin-top:26px;pointer-events:auto" data-en="Let’s talk">Hablemos</a>
+    </div>
+
+    <div class="rail-dots" aria-hidden="true"><span data-en="Idea">Idea</span><span data-en="Balance">Equilibrio</span><span data-en="Agreement">Acuerdo</span><span data-en="Future">Futuro</span><span data-en="Structure">Estructura</span></div>
+    <div class="cue" aria-hidden="true" data-en="Scroll">Desliza</div>
+    <div class="progress-line" aria-hidden="true"></div>
   </div>
-  <button class="video-toggle" type="button" aria-pressed="false" aria-label="Pausar video">
-    <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>
-    <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg>
-  </button>
-  <a class="scroll-cue" href="#trayectoria" aria-label="Bajar a la siguiente sección" data-en-aria-label="Scroll to next section"></a>
 </section>
 
 <!-- CARRUSEL DE INSTITUCIONES -->
@@ -438,7 +465,7 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p data-en="© 2026 Gabriela L. González Vázquez. All rights reserved.">© 2026 Gabriela L. González Vázquez. Todos los derechos reservados.</p>
+    <p data-en="© 2026 Gabriela L. González Vázquez. All rights reserved. Cover artworks: public domain, The Metropolitan Museum of Art.">© 2026 Gabriela L. González Vázquez. Todos los derechos reservados. Obras de la portada: dominio público, The Metropolitan Museum of Art.</p>
     <nav aria-label="Pie de página" data-en-aria-label="Footer">
       <a href="blog.html" data-en="Insights">Perspectivas</a>
       <a href="recursos.html" data-en="Resources">Recursos</a>
@@ -454,5 +481,6 @@
 </a>
 
 <script src="js/sitio.js"></script>
+<script src="js/portada.js"></script>
 </body>
 </html>
