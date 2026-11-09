@@ -21,6 +21,15 @@ def bloque(tag, es, en, attrs=""):
     a = f" {attrs}" if attrs else ""
     return f'<{tag}{a} data-en="{esc(en)}">{es}</{tag}>'
 
+PANEL_COOKIES = """
+<div class="storage-panel" id="panel-almacenamiento">
+  <div class="sp-row"><span class="sp-k" data-en="Cookies on this site">Cookies en este sitio</span><b class="sp-v" data-en="None">Ninguna</b></div>
+  <div class="sp-row"><span class="sp-k" data-en="Analytics or advertising">Analítica o publicidad</span><b class="sp-v" data-en="None">Ninguna</b></div>
+  <div class="sp-row"><span class="sp-k" data-en="Third-party connections on load">Conexiones a terceros al cargar</span><b class="sp-v" data-en="None">Ninguna</b></div>
+  <div class="sp-row"><span class="sp-k" data-en="Saved in your browser right now">Guardado ahora en su navegador</span><b class="sp-v" id="sp-estado" aria-live="polite">—</b></div>
+  <button class="btn btn-line" type="button" id="sp-borrar" data-en="Delete my language preference">Borrar mi preferencia de idioma</button>
+</div>"""
+
 def seccion(id_, titulo, partes):
     """partes: lista de ('p'|'h3', es, en) o ('ul', [(es, en), ...])"""
     out = [f'<section class="privacidad-section" id="{id_}">', bloque("h2", *titulo)]
@@ -29,28 +38,57 @@ def seccion(id_, titulo, partes):
             out.append("<ul>" + "".join(bloque("li", es, en) for es, en in p[1]) + "</ul>")
         else:
             out.append(bloque(p[0], p[1], p[2]))
+    if id_ == "cookies":
+        out.insert(2, PANEL_COOKIES)
     out.append("</section>")
     return "\n".join(out)
 
-def pagina(nombre, titulo, desc, h1, intro, secciones, eyebrow=("Legal", "Legal")):
+def pagina(nombre, titulo, desc, h1, intro, secciones, resumen, eyebrow=("Legal", "Legal")):
     out = head(titulo, desc, nombre, "website")
     out += header("")
-    indice = "".join(f'<li><a class="link" href="#{s[0]}" data-en="{esc(s[1][1])}">{s[1][0]}</a></li>' for s in secciones)
+    indice = "".join(f'<li><a href="#{s[0]}" data-en="{esc(s[1][1])}">{s[1][0]}</a></li>' for s in secciones)
+    tarjetas = "".join(f'<li><b data-en="{esc(t[1])}">{t[0]}</b><span data-en="{esc(d[1])}">{d[0]}</span></li>' for t, d in resumen)
     out += f'''
 <main id="main">
-<div class="wrap legal">
-{bloque("p", *eyebrow, attrs='class="eyebrow"')}
-{bloque("h1", *h1)}
-<p class="fecha-actualizacion" data-en="Last updated: {ACTUALIZADO[1]}">Última actualización: {ACTUALIZADO[0]}</p>
-{"".join(bloque("p", es, en, attrs='class="legal-intro"') for es, en in intro)}
-<nav class="legal-index" aria-label="Contenido" data-en-aria-label="Contents"><ol>{indice}</ol></nav>
-{"".join(seccion(*s) for s in secciones)}
-<a class="btn btn-line btn-volver" href="index.html" data-en="Back to home">Volver al inicio</a>
+<section class="legal-hero band-blue">
+  <div class="wrap reveal">
+    <span class="pill pill-white" data-en="{esc(eyebrow[1])}">{eyebrow[0]}</span>
+    {bloque("h1", *h1)}
+    <p class="fecha-actualizacion" data-en="Last updated: {ACTUALIZADO[1]}">Última actualización: {ACTUALIZADO[0]}</p>
+    <ul class="legal-summary">{tarjetas}</ul>
+  </div>
+</section>
+<div class="wrap legal-layout">
+  <aside class="legal-toc">
+    <nav aria-label="Contenido" data-en-aria-label="Contents">
+      <p class="eyebrow" data-en="Contents">Contenido</p>
+      <ol>{indice}</ol>
+    </nav>
+    <button class="btn btn-line btn-print-page" type="button" data-en="Print / save PDF">Imprimir / guardar PDF</button>
+  </aside>
+  <div class="legal">
+    {"".join(bloque("p", es, en, attrs='class="legal-intro"') for es, en in intro)}
+    {"".join(seccion(*s) for s in secciones)}
+    <a class="btn btn-line btn-volver" href="index.html" data-en="Back to home">Volver al inicio</a>
+  </div>
 </div>
 </main>
 '''
     out += footer()
     open(os.path.join(ROOT, nombre), "w", encoding="utf-8").write(out)
+
+RESUMEN_PRIV = [
+    (("Sin cookies", "No cookies"), ("Este sitio no usa cookies propias ni de terceros.", "This site uses no first- or third-party cookies.")),
+    (("Sin rastreo", "No tracking"), ("No hay analítica, publicidad ni píxeles de seguimiento.", "No analytics, advertising or tracking pixels.")),
+    (("No vendemos datos", "We do not sell data"), ("Sus datos solo se usan para atenderle.", "Your data is only used to assist you.")),
+    (("Sus derechos", "Your rights"), ("Acceso, rectificación, cancelación y oposición, sin costo.", "Access, rectification, cancellation and objection, free of charge.")),
+]
+RESUMEN_LEGAL = [
+    (("Información general", "General information"), ("Los artículos no constituyen asesoría legal.", "Articles do not constitute legal advice.")),
+    (("Sin relación automática", "No automatic relationship"), ("Escribir por el sitio no crea una relación abogada-cliente.", "Writing through the site does not create an attorney-client relationship.")),
+    (("Marcas de terceros", "Third-party marks"), ("Los logotipos solo describen la trayectoria profesional.", "Logos only describe the professional background.")),
+    (("Ley mexicana", "Mexican law"), ("Tribunales de la Ciudad de México.", "Courts of Mexico City.")),
+]
 
 
 # ====================================================================== AVISO DE PRIVACIDAD
@@ -206,12 +244,12 @@ if __name__ == "__main__":
            ("Aviso de Privacidad Integral", "Comprehensive Privacy Notice"),
            [("Este aviso se emite en cumplimiento de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (publicada en el Diario Oficial de la Federación el 20 de marzo de 2025) y demás normativa aplicable y, para personas que se encuentren en el Espacio Económico Europeo, del Reglamento (UE) 2016/679 (RGPD).",
              "This notice is issued in compliance with Mexico’s Federal Law on the Protection of Personal Data Held by Private Parties (published in the Official Gazette on March 20, 2025) and other applicable regulations and, for persons located in the European Economic Area, Regulation (EU) 2016/679 (GDPR).")],
-           PRIV)
+           PRIV, RESUMEN_PRIV)
     pagina("aviso-legal.html",
            ("Aviso Legal — Gabriela L. González Vázquez", "Legal Notice — Gabriela L. González Vázquez"),
            ("Aviso legal y términos de uso del sitio.", "Legal notice and terms of use of the website."),
            ("Aviso legal y términos de uso", "Legal notice and terms of use"),
            [("Al utilizar este sitio usted acepta los siguientes términos. Si no está de acuerdo con ellos, le pedimos no utilizarlo.",
              "By using this website you accept the following terms. If you do not agree with them, please do not use it.")],
-           LEGAL)
+           LEGAL, RESUMEN_LEGAL)
     print("OK: privacidad.html + aviso-legal.html")

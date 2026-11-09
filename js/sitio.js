@@ -81,14 +81,20 @@
 
     // 3b. Aparición al entrar en pantalla
     if (animar) {
+        // Las animaciones se repiten al bajar y al subir: al salir por completo de la pantalla
+        // el elemento vuelve a su estado inicial y se anima de nuevo cuando reaparece.
         var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (en) {
-                if (!en.isIntersecting) return;
-                en.target.classList.add('in');
-                if (en.target.hasAttribute('data-count')) contar(en.target);
-                io.unobserve(en.target);
+                var el = en.target;
+                if (en.isIntersecting) {
+                    if (el.classList.contains('in')) return;
+                    el.classList.add('in');
+                    if (el.hasAttribute('data-count')) contar(el);
+                } else if (!el.matches(':focus-within')) {
+                    el.classList.remove('in');
+                }
             });
-        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
         document.querySelectorAll('.reveal, .reveal-img, .t-item, [data-count]').forEach(function (el) { io.observe(el); });
     }
 
@@ -173,6 +179,7 @@
                 var abierto = nav && nav.classList.contains('open');
                 if (animar && !abierto) top.classList.toggle('hide', y > ultimoY && y > 400);
             }
+            if (Math.abs(y - ultimoY) > 2) doc.classList.toggle('subiendo', y < ultimoY);
             ultimoY = y;
             if (barra) {
                 var h = doc.scrollHeight - window.innerHeight;
@@ -236,7 +243,8 @@
             dots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
             if (cap) cap.textContent = slides[i].querySelector('img').alt;
         }
-        function auto() { if (reduce) return; clearInterval(timer); timer = setInterval(function () { if (!document.hidden) ir(i + 1); }, 5200); }
+        function reiniciarPunto() { var d = dots[i]; if (!d) return; d.setAttribute('aria-current', 'false'); void d.offsetWidth; d.setAttribute('aria-current', 'true'); }
+        function auto() { if (reduce) return; clearInterval(timer); reiniciarPunto(); timer = setInterval(function () { if (!document.hidden) ir(i + 1); }, 5200); }
         dots.forEach(function (d, k) { d.addEventListener('click', function () { ir(k); auto(); }); });
         car.addEventListener('mouseenter', function () { clearInterval(timer); });
         car.addEventListener('mouseleave', auto);
@@ -333,6 +341,35 @@
             est.textContent = q ? (doc.lang === 'en' ? n + ' terms found' : n + ' términos encontrados') : '';
         });
     }
+
+    /* ---------- 3n. AVISOS LEGALES: índice activo, almacenamiento e impresión ---------- */
+    var tocLinks = document.querySelectorAll('.legal-toc a');
+    if (tocLinks.length && 'IntersectionObserver' in window) {
+        var porId = {};
+        tocLinks.forEach(function (a) { porId[a.getAttribute('href').slice(1)] = a; });
+        var tocIO = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+                if (!en.isIntersecting) return;
+                tocLinks.forEach(function (a) { a.removeAttribute('aria-current'); });
+                var a = porId[en.target.id]; if (a) a.setAttribute('aria-current', 'true');
+            });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        document.querySelectorAll('.privacidad-section[id]').forEach(function (s) { tocIO.observe(s); });
+    }
+    var spEstado = document.getElementById('sp-estado'), spBorrar = document.getElementById('sp-borrar');
+    function pintarEstado() {
+        if (!spEstado) return;
+        var v = leer(), en = doc.lang === 'en';
+        spEstado.textContent = v ? (en ? 'Language: ' : 'Idioma: ') + v.toUpperCase() : (en ? 'Nothing' : 'Nada');
+        if (spBorrar) spBorrar.disabled = !v;
+    }
+    if (spBorrar) spBorrar.addEventListener('click', function () {
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        pintarEstado();
+    });
+    document.addEventListener('idioma', pintarEstado);
+    pintarEstado();
+    document.querySelectorAll('.btn-print-page').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 
     /* ---------- 4. COMPARTIR ---------- */
     var url = encodeURIComponent(location.href), titulo = encodeURIComponent(document.title);
